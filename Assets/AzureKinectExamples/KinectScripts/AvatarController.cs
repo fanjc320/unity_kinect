@@ -100,6 +100,7 @@ namespace com.rfilkov.components
 
 
         // The body root node
+        [SerializeField]
         protected Transform bodyRoot;
         protected float hipCenterDist = 0f;
 
@@ -130,6 +131,7 @@ namespace com.rfilkov.components
 
         //protected Vector3 offsetNodePos;
         //protected Quaternion offsetNodeRot;
+        [SerializeField]
         protected Vector3 bodyRootPosition;
 
         // Calibration Offset Variables for Character Position.

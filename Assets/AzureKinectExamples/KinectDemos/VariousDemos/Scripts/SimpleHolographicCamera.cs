@@ -41,10 +41,10 @@ namespace com.rfilkov.components
         [Tooltip("UI-Text to display status messages.")]
         public UnityEngine.UI.Text statusText = null;
 
-        private float left = -0.2F;
-        private float right = 0.2F;
-        private float bottom = -0.2F;
-        private float top = 0.2F;
+        public float left = -0.2F;
+        public float right = 0.2F;
+        public float bottom = -0.2F;
+        public float top = 0.2F;
 
         private KinectManager kinectManager;
         private Camera cam;
@@ -137,27 +137,28 @@ namespace com.rfilkov.components
                 if (headPosValid)
                 {
                     // set off-center projection
-                    left = cam.nearClipPlane * (-screenWidth / 2 - headRelPosition.x) / standardUserDistance; // initialRelPos.z;
+                    left = cam.nearClipPlane * (-screenWidth / 2 - headRelPosition.x) / standardUserDistance; // initialRelPos.z; // nearClipPlane:0.3 screenWidth:1.6 headRelPosition:"(0.43, -0.49, 1.05)" standardUserDistance:2
                     right = cam.nearClipPlane * (screenWidth / 2 - headRelPosition.x) / standardUserDistance; // initialRelPos.z;
 
-                    bottom = cam.nearClipPlane * (-screenHeight / 2 - headRelPosition.y) / standardUserDistance; // initialRelPos.z;
-                    top = cam.nearClipPlane * (screenHeight / 2 - headRelPosition.y) / standardUserDistance; // initialRelPos.z;
+                    bottom = cam.nearClipPlane * (-screenHeight / 2 - headRelPosition.y) / standardUserDistance; // initialRelPos.z; // 0.3*(-0.9/2  - -0.49)/2 = 0.005394647
+                    top = cam.nearClipPlane * (screenHeight / 2 - headRelPosition.y) / standardUserDistance; // initialRelPos.z; // // 0.3*(0.9/2  - -0.49)/2 = 0.005394647 = 0.1403946
 
                     //cam.transform.position = new Vector3(headRelPosition.x, headRelPosition.y, -headRelPosition.z);
                     //cam.transform.LookAt(new Vector3(headRelPosition.x, headRelPosition.y, 0));
 
                     // consider the initial camera pose
                     Vector3 headCamPos = new Vector3(headRelPosition.x, headRelPosition.y, -headRelPosition.z);
-                    Quaternion headCamRot = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+                    Quaternion headCamRot = Quaternion.LookRotation(Vector3.forward, Vector3.up); // 0,0,1  0,1,0 headCamRot:"(0.00000, 0.00000, 0.00000, 1.00000)"
 
-                    Matrix4x4 camPoseMat = Matrix4x4.TRS(headCamPos, headCamRot, Vector3.one);
+                    Matrix4x4 camPoseMat = Matrix4x4.TRS(headCamPos, headCamRot, Vector3.one); // "(0.43, -0.49, -1.05)","(0.00000, 0.00000, 0.00000, 1.00000)",
                     camPoseMat = camPoseMat * initialCamMat;
 
-                    cam.transform.position = camPoseMat.GetColumn(3);
-                    cam.transform.rotation = camPoseMat.rotation;
+                    cam.transform.position = camPoseMat.GetColumn(3); //"(0.43, -0.49, -1.05)"
+                    cam.transform.rotation = camPoseMat.rotation;//"(0.00000, 0.00000, 0.00000, 1.00000)"
 
-                    Matrix4x4 m = PerspectiveOffCenter(left, right, bottom, top, cam.nearClipPlane, cam.farClipPlane);
+                    Matrix4x4 m = PerspectiveOffCenter(left, right, bottom, top, cam.nearClipPlane, cam.farClipPlane);//(-0.1848, 0.055, 0.0054, 0.14, 0.3, 10000)
                     cam.projectionMatrix = m;
+                    //Debug.Log("projectionMatrix :" + cam.projectionMatrix);
                 }
                 else
                 {
